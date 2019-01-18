@@ -1,0 +1,59 @@
+#lang scheme
+(define (card-color one-card) (cond
+                                ((or (eqv? (car one-card) 'H) (eqv? (car one-card) 'D)) 'red)
+                                ((or (eqv? (car one-card) 'S) (eqv? (car one-card) 'C)) 'black)
+                                ))
+
+(define (card-rank one-card) (cond
+                                ((eqv? (cdr one-card) 'A) '11)
+                                ((or (eqv? (cdr one-card) 'K) (eqv? (cdr one-card) 'Q) (eqv? (cdr one-card) 'J)) '10)
+                                (else (cdr one-card))
+                                ))
+
+(define (all-same-color list-of-cards)
+  (let* ((l (length list-of-cards)) (c (length (filter (lambda (one-card) (eqv? (card-color one-card) 'red)) list-of-cards))))
+   (if
+    (or (eqv? c l) (eqv? c '0))
+    #t
+    #f)
+  )
+)
+
+(define (fdraw list-of-cards held-cards)
+  (and (append held-cards (list (car list-of-cards))) (remove (car list-of-cards) list-of-cards))
+)
+
+(define (fdiscard list-of-cards list-of-moves goal held-cards)
+  (cdr held-cards)
+)
+
+(define (find-steps list-of-cards list-of-moves goal)
+  (define held-cards '())
+  (map (lambda (move) (cond
+    ((eqv? move 'draw) (begin (remove (car list-of-cards) list-of-cards) (list 'draw (car list-of-cards))))
+    ((eqv? move 'discard) (and (list 'discard (car held-cards)) (cdr held-cards)))
+  ))
+       list-of-moves
+  )
+)
+
+;(define (find-pair list-of-cards move held-cards)
+;  (cond
+;    ((eqv? move 'draw) (and (fdraw list-of-cards held-cards) (remove (car list-of-cards) list-of-cards) (list 'draw (car list-of-cards))))
+;    ((eqv? move 'discard) (and (list 'discard (car held-cards)) (cdr held-cards)))
+;  )
+;)
+
+
+
+(define (calc-playerpoint list-of-cards)
+  (foldl + 0 (map (lambda (x) (card-rank x)) list-of-cards))
+)
+
+(define (calc-score list-of-cards goal)
+    (if (> (calc-playerpoint list-of-cards) goal)
+        (if (all-same-color list-of-cards) (/ (* 5 (- (calc-playerpoint list-of-cards) goal)) 2) (* 5 (- (calc-playerpoint list-of-cards) goal)))
+        (if (all-same-color list-of-cards) (/ (- goal (calc-playerpoint list-of-cards)) 2) (- goal (calc-playerpoint list-of-cards)))
+    )
+)
+

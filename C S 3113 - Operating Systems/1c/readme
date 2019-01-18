@@ -1,0 +1,79 @@
+.TH PROJECT 1C - C S 3113 - FALL 2017
+
+.SH NAME
+
+.B ./1c
+- C shell with IO redirection and modified commands for the project of CS 3113 course @University of Oklahoma
+
+.SH DESCRIPTION
+
+This shell is designed for a project during Fall 2017 to improve the understanding of the concepts during the semester. It allows IO redirection, background process executing, and some special commands different from usual shell.
+
+.SH USAGE
+
+It can be compiled by only executing 'make' command. And also executable and object files can be removed by executing 'make clean' command. After compiling, the shell can be run using the command
+.B './1c'
+ or
+.B './1c <batchfile>'
+where the batch file can be selected to run the commands inside it by simply writing the path of the file to
+.B <batchfile>.
+
+.SH INTERNAL COMMANDS
+
+Beside the Linux shell commands, there are couple internal commands that are explained below.
+
+.B echo <comment>
+    Prints <comment> part without the word echo without considering any I/O redirector
+
+.B pause
+    Displays "Press Enter to continue..." and pauses operation of the shell until 'Enter' button is pressed
+
+.B help
+    Displays this readme file
+
+.B clr
+    Clears the command line screen
+
+.B dir <directory>
+    Lists the <directory> path ,or current directory if not specified, contents including the ones that start with '.' using a long list format
+
+.B environ
+    List all the environment strings
+
+.B cd <directory>
+    Changes the working directory by changing PWD environment
+
+.B quit
+    Exits from the program with a zero return value
+
+.SH I/O REDIRECTION
+
+.B programname args < inputfile
+.P
+Sets the default input to the inputfile for that specific program that will be executed. With input redirection with the character <, inputfile is checked for existence and also read permission.
+
+.B programname args > outputfile, programname args >> outputfile
+.P
+Sets the default output to the outputfile for that specific program that will be executed. With output redirection, if the redirection character is > then the outputfile is created if it does not exist and truncated if it does. If the redirection token is >> then outputfile is created if it does not exist and appended to if it does.
+
+.SH BACKGROUND PROGRAM EXECUTION
+
+.B programname args &
+.P
+With & character surrounded by white space characters(' ','\t',or '\n') at the end of the command line entered, the program is run at the background with continuing to normal procedure as waits for the next command.
+
+.SH BUGS
+
+Arrow buttons don't work as in Linux shell, instead they prints the string that keyboard actually sends to program.
+
+'history' command doesn't work because every command is running in a newly born child process that dies after executing the command and this shell doesn't keep records of commands.
+
+.SH POLISHING
+
+This shell doesn't check if the argument exists at the command entered. It directly sends to the child process to be executed and child process handles it with using 'exec' command.
+
+When Ctrl-C is pressed during user entry of command or command execution, program prints the string that refers to Ctrl-C button and exits the program not only the command. And SIGINT trapping would resolve this issue by catching the Ctrl-C pressing and modifying the default behaviour.
+
+I/O redirection part of the shell checks the existence and also permissions of input and output files by using 'access' system call with FLAGs. If the input file doesn't exist, a new file is created, otherwise read permission is checked on that file. If output file doesn't exist, a new file is created, otherwise write permission is checked on that file.
+
+makefile is specified for only one source file and removes .o, .out files and '1c' file when it called as 'make clean'.
